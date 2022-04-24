@@ -1,7 +1,7 @@
 # Взаимодействие с Марусей
 # Скилл работает на aiohttp библиотеке, сам скилл - вэб-сервер,
 # который отвечает на post-запросы сервера Маруси
-#для запуска http://localhost:8080/health_assistant
+# для запуска http://localhost:8080/health_assistant
 import aiohttp
 from aiohttp import web
 import aiohttp_cors
@@ -19,11 +19,8 @@ async def health_assistant(request_obj):
     request = await request_obj.json()
 
     # создаём ответ
-    response = {}
-    response["version"] = request["version"]
-    response["session"] = request["session"]
+    response = {"version": request["version"], "session": request["session"], "response": {"end_session": False}}
     # закрывать сессию после текущего обращения к скиллу не надо, проставить руками, когда надо будет
-    response["response"] = { "end_session" : False }
     user_state = state.get_state(request)
     session_state = user_state.get_session_state()
 
@@ -35,6 +32,7 @@ async def health_assistant(request_obj):
 
     response["response"]["text"] = new_state.get_text()
     response["response"]["tts"] = new_state.get_tts()
+    response["response"]["buttons"] = new_state.get_buttons()
 
     if not new_state.is_end_state():
         session_state["current_state_id"] = new_state.get_id()
