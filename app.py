@@ -21,9 +21,14 @@ async def health_assistant(request_obj):
     # создаём ответ
     response = {"version": request["version"], "session": request["session"], "response": {"end_session": False}}
     # закрывать сессию после текущего обращения к скиллу не надо, проставить руками, когда надо будет
+    # берём данные пользователя по сессии
     user_state = state.get_state(request)
     session_state = user_state.get_session_state()
+    # берём данные пользователя из персистента
+    user_persist_state = state.get_persist_state(request)
+    persist_state = user_persist_state.get_persist_state()
 
+    # request.get("session", False).get("new", False)
     if request["session"]["new"]:
         new_state = logic.get_root_state()
     else:
@@ -39,6 +44,13 @@ async def health_assistant(request_obj):
         user_state.save_session_state(response)
     else:
         response["response"]["end_session"] = True
+
+    if persist_state == {}:
+        persist_state['calories'] = 0
+        user_persist_state.save_session_persist_state(response)
+    else:
+        persist_state['calories'] += new_state.get_calories()
+        user_persist_state.save_session_persist_state(response)
 
     return web.json_response(response)
 
