@@ -30,7 +30,10 @@ async def health_assistant(request_obj):
 
     # request.get("session", False).get("new", False)
     if request["session"]["new"]:
-        new_state = logic.get_root_state()
+        if persist_state == {}:
+            new_state = logic.get_root_state()
+        else:
+            new_state = logic.get_leaf_state()
     else:
         current_state = logic.get_state(session_state["current_state_id"])
         new_state = current_state.get_next_state(request["request"]["command"])
@@ -51,6 +54,9 @@ async def health_assistant(request_obj):
     else:
         persist_state['calories'] += new_state.get_calories()
         user_persist_state.save_session_persist_state(response)
+
+    if response["response"]["end_session"]:
+        response["response"]["text"] += str(persist_state['calories'])
 
     return web.json_response(response)
 

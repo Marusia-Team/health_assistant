@@ -25,7 +25,6 @@ class UserPersistState:
         return self.persist_state
 
     def save_session_persist_state(self, response):
-        print(self.persist_state)
         response["user_state_update"] = self.persist_state
 
 
