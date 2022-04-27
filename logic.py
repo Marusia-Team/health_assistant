@@ -36,7 +36,12 @@ class Transition:
 # состояние пользователя
 class State:
 
-    def __init__(self, id, text, transitions, default_transition, tts, buttons=None, calories=0, is_end=False):
+    def __init__(self, id, text, transitions, default_transition, tts, buttons=None,
+                 calories=0, card=None, commands=None, is_end=False):
+        if commands is None:
+            commands = []
+        if card is None:
+            card = {}
         if buttons is None:
             buttons = []
         self.id = id
@@ -46,6 +51,8 @@ class State:
         self.tts = tts
         self.buttons = buttons
         self.calories = calories
+        self.card = card
+        self.commands = commands
         self.is_end = is_end
 
     def get_next_state(self, user_input):
@@ -75,6 +82,12 @@ class State:
 
     def get_calories(self):
         return self.calories
+
+    def get_card(self):
+        return self.card
+
+    def get_commands(self):
+        return self.commands
 
 
 def init():
@@ -143,7 +156,7 @@ def init():
                   }
               },
               {
-                  "title": "СЧИТАТЬ БАРАНОВ !!!111!1",
+                  "title": "Бараны",
                   "payload": {
                       "action": "баран"
                   }
@@ -211,7 +224,12 @@ def init():
           ],
           "800",
           "Начинаем! \n <speaker audio_vk_id=2000512031_456239035> "
-          "Скажите «Ещё» чтобы выбрать новое упражнение, «Нет» чтобы выйти в меню", calories=50
+          "Скажите «Ещё» чтобы выбрать новое упражнение, «Нет» чтобы выйти в меню",
+          calories=50,
+          card={
+              "type": "BigImage",
+              "image_id": 457239017
+          }
           ).register()
 
     # Считаю баранов
@@ -220,10 +238,11 @@ def init():
           "Спокойной ночи",
           [Transition("900", ["нет", "не хочу"])],
           "900",
-          " Звук: <speaker audio_vk_id=2000512031_456239035> "
-          # проверка влияния \n на длительность паузы
-          "Счёт баранов: Раз баран \n\n , Два баран \n\n, Три баран \n\n, Четыре баран \n\n, Пять баран \n\n, "
-          " Шесть баран \n\n, Семь баран \n\n, Восемь баран \n\n, Девять баран \n\n, Десять баран \n\n ",
+          "Счёт баранов",
+          card={
+                  "type": "BigImage",
+                  "image_url": "https://cdn.ananasposter.ru/image/cache/catalog/poster/anime/81/17291-1000x830.jpg"
+          }
           ).register()
 
     # unknown

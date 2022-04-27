@@ -1,7 +1,7 @@
 # Взаимодействие с Марусей
 # Скилл работает на aiohttp библиотеке, сам скилл - вэб-сервер,
 # который отвечает на post-запросы сервера Маруси
-# для запуска http://localhost:8080/health_assistant
+# для запуска http://localhost:8080/health_assistant@60fe0eae-4314-4905-85af-f4c167677dd5
 import aiohttp
 from aiohttp import web
 import aiohttp_cors
@@ -41,6 +41,8 @@ async def health_assistant(request_obj):
     response["response"]["text"] = new_state.get_text()
     response["response"]["tts"] = new_state.get_tts()
     response["response"]["buttons"] = new_state.get_buttons()
+    response["response"]["card"] = new_state.get_card()
+    response["response"]["commands"] = new_state.get_commands()
 
     if not new_state.is_end_state():
         session_state["current_state_id"] = new_state.get_id()
