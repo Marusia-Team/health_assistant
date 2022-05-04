@@ -15,16 +15,18 @@ HOST_PORT = 8080
 
 
 async def health_assistant(request_obj):
-    # парсим входной жсон
+    # Парсим входной жсон
     request = await request_obj.json()
 
-    # создаём ответ
+    # Создаём ответ
     response = {"version": request["version"], "session": request["session"], "response": {"end_session": False}}
-    # закрывать сессию после текущего обращения к скиллу не надо, проставить руками, когда надо будет
-    # берём данные пользователя по сессии
+    # Закрывать сессию после текущего обращения к скиллу не надо, проставить руками, когда надо будет
+    # Берём данные пользователя по сессии
     user_state = state.get_state(request)
     session_state = user_state.get_session_state()
-    # берём данные пользователя из персистента
+    # Берём данные пользователя из персистента
+    # TODO: Для сохранения предыдущего состояния пользователя, можно использовать персистент,
+    #  класть в него текущее состояние при переходе на следующее состояние, при выходе из скилла можно сбрасывать
     user_persist_state = state.get_persist_state(request)
     persist_state = user_persist_state.get_persist_state()
 
@@ -58,7 +60,7 @@ async def health_assistant(request_obj):
         user_persist_state.save_session_persist_state(response)
 
     if response["response"]["end_session"]:
-        response["response"]["text"] += str(persist_state['calories'])
+        response["response"]["text"] += str(persist_state['calories']) + " калорий"
 
     return web.json_response(response)
 
