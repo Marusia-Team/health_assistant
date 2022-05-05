@@ -8,7 +8,6 @@ import aiohttp_cors
 import state
 import logic
 
-
 # Хост и порт, которые прослушивает наш вэб-сервер (Андрей, нужен айпишник и порт)
 HOST_IP = "127.0.0.1"
 HOST_PORT = 8080
@@ -24,6 +23,10 @@ async def health_assistant(request_obj):
     # Берём данные пользователя по сессии
     user_state = state.get_state(request)
     session_state = user_state.get_session_state()
+    if session_state == {}:
+        prev_state = ""
+    else:
+        prev_state = session_state['current_state_id']
     # Берём данные пользователя из персистента
     # TODO: Для сохранения предыдущего состояния пользователя, можно использовать персистент,
     #  класть в него текущее состояние при переходе на следующее состояние, при выходе из скилла можно сбрасывать
@@ -54,9 +57,11 @@ async def health_assistant(request_obj):
 
     if persist_state == {}:
         persist_state['calories'] = 0
+        persist_state['previous_state'] = ""
         user_persist_state.save_session_persist_state(response)
     else:
         persist_state['calories'] += new_state.get_calories()
+        persist_state['previous_state'] = prev_state
         user_persist_state.save_session_persist_state(response)
 
     if response["response"]["end_session"]:
