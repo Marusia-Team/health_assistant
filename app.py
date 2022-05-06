@@ -60,12 +60,24 @@ async def health_assistant(request_obj):
         persist_state['previous_state'] = ""
         user_persist_state.save_session_persist_state(response)
     else:
-        persist_state['calories'] += new_state.get_calories()
-        persist_state['previous_state'] = prev_state
+        # Костыль для перехода в начальное состояние
+        if new_state.get_calories() == 9999:
+            persist_state['calories'] = None
+        elif new_state.get_calories() == 8888:
+            persist_state['calories'] = 0
+        else:
+            if 'calories' in persist_state:
+                persist_state['calories'] += new_state.get_calories()
+        if response["response"]["end_session"]:
+            persist_state['previous_state'] = None
+        else:
+            persist_state['previous_state'] = prev_state
         user_persist_state.save_session_persist_state(response)
 
     if response["response"]["end_session"]:
-        response["response"]["text"] += str(persist_state['calories']) + " калорий"
+        p_state = user_persist_state.get_persist_state()
+        if 'calories' in p_state:
+            response["response"]["text"] += str(persist_state['calories']) + " калорий"
 
     return web.json_response(response)
 
