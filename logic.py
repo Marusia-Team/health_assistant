@@ -37,7 +37,9 @@ class Transition:
 class State:
 
     def __init__(self, id, text, transitions, default_transition, tts, buttons=None,
-                 calories=0, card=None, commands=None, is_end=False):
+                 calories=0, card=None, commands=None, audio_player=None, is_end=False):
+        if audio_player is None:
+            audio_player = {}
         if commands is None:
             commands = []
         if card is None:
@@ -53,6 +55,7 @@ class State:
         self.calories = calories
         self.card = card
         self.commands = commands
+        self.audio_player = audio_player
         self.is_end = is_end
 
     def get_next_state(self, user_input):
@@ -88,6 +91,9 @@ class State:
 
     def get_commands(self):
         return self.commands
+
+    def get_audio_player(self):
+        return self.audio_player
 
 
 def init():
@@ -188,7 +194,25 @@ def init():
           "Какой рацион выберите: для похудения или для набора массы?",
           ).register()
 
-    State("201", "", [], "800", "Слоныыыыыыыыы").register()
+    State("201", "Слоныыыыыыыыы", [], "901", "Слоныыыыыыыыы",
+          audio_player={
+              "seek_track": 0,
+              "seek_second": 0,
+              "playlist": [
+                  {
+                      "stream": {
+                          "track_id": "2000512031_456239035",
+                          "source_type": "vk",
+                          "source": "2000512031_456239035"
+                      },
+                      "meta": {
+                          "sub_title": "Artem Nikolaev",
+                          "title": "The best ever song",
+                      }
+                  }
+              ]
+          }
+          ).register()
 
     State("202", "", [], "800", "Слоныыыыыыыыы").register()
 

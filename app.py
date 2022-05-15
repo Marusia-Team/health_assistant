@@ -60,6 +60,8 @@ async def health_assistant(request_obj):
     else:
         response["response"]["buttons"] = new_state.get_buttons()
     response["response"]["card"] = new_state.get_card()
+    if new_state.get_id() == "201":
+        response["response"]["audio_player"] = new_state.get_audio_player()
     response["response"]["commands"] = new_state.get_commands()
 
     if not new_state.is_end_state():
