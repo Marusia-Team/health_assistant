@@ -43,24 +43,27 @@ async def health_assistant(request_obj):
         current_state = logic.get_state(session_state["current_state_id"])
         # Сохраняем предыдущее состояние
         new_state = current_state.get_next_state(request["request"]["command"])
-        if persist_state['previous_state'] == "":
-            previous_state = logic.get_state(session_state["current_state_id"])
-        else:
-            previous_state = logic.get_state(persist_state['previous_state'])
         if current_state.get_id() == "800":
+            if persist_state['previous_state'] == "":
+                previous_state = logic.get_state(session_state["current_state_id"])
+            else:
+                previous_state = logic.get_state(persist_state['previous_state'])
             potential_new_state = previous_state.get_next_state(request["request"]["command"])
             if potential_new_state.get_id() != "800":
                 flag = True
                 new_state = potential_new_state
 
-    response["response"]["text"] = new_state.get_text()
+    if new_state.get_id() == "201":
+        response["response"]["text"] = logic.get_random_train()
+    else:
+        response["response"]["text"] = new_state.get_text()
     response["response"]["tts"] = new_state.get_tts()
     if new_state.get_id() == "800":
         response["response"]["buttons"] = logic.get_state(session_state["current_state_id"]).get_buttons()
     else:
         response["response"]["buttons"] = new_state.get_buttons()
     response["response"]["card"] = new_state.get_card()
-    if new_state.get_id() == "201":
+    if new_state.get_id() == "701":
         response["response"]["audio_player"] = new_state.get_audio_player()
     response["response"]["commands"] = new_state.get_commands()
 
