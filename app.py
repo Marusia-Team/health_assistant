@@ -53,19 +53,50 @@ async def health_assistant(request_obj):
                 flag = True
                 new_state = potential_new_state
 
-    if new_state.get_id() == "201":
-        response["response"]["text"] = logic.get_random_train()
+    if new_state.get_id() == "401":
+        text, tts = logic.get_random_train()
+        response["response"]["text"] = text
+        response["response"]["tts"] = tts
+    elif new_state.get_id() == "201":
+        text, tts = logic.get_recipe()
+        response["response"]["text"] = text
+        response["response"]["tts"] = tts
+    elif new_state.get_id() == "301":
+        text, tts = logic.get_first_train()
+        response["response"]["text"] = text
+        response["response"]["tts"] = tts
+    elif new_state.get_id() == "303":
+        text, tts = logic.get_second_train()
+        response["response"]["text"] = text
+        response["response"]["tts"] = tts
+    elif new_state.get_id() == "305":
+        text, tts = logic.get_third_train()
+        response["response"]["text"] = text
+        response["response"]["tts"] = tts
+    elif new_state.get_id() == "307":
+        text, tts = logic.get_forth_train()
+        response["response"]["text"] = text
+        response["response"]["tts"] = tts
+    elif new_state.get_id() == "309":
+        text, tts = logic.get_fifth_train()
+        response["response"]["text"] = text
+        response["response"]["tts"] = tts
     else:
         response["response"]["text"] = new_state.get_text()
-    response["response"]["tts"] = new_state.get_tts()
+        response["response"]["tts"] = new_state.get_tts()
     if new_state.get_id() == "800":
         response["response"]["buttons"] = logic.get_state(session_state["current_state_id"]).get_buttons()
     else:
         response["response"]["buttons"] = new_state.get_buttons()
     response["response"]["card"] = new_state.get_card()
-    if new_state.get_id() == "701":
-        response["response"]["audio_player"] = new_state.get_audio_player()
+    # if new_state.get_id() == "701":
+    #     response["response"]["audio_player"] = new_state.get_audio_player()
     response["response"]["commands"] = new_state.get_commands()
+
+    if new_state.get_id() == "200" and request["session"]["application"]["application_type"] == "speaker":
+        new_state = logic.get_state("202")
+        response["response"]["text"] = new_state.get_text()
+        response["response"]["tts"] = new_state.get_tts()
 
     if not new_state.is_end_state():
         session_state["current_state_id"] = new_state.get_id()
@@ -78,7 +109,6 @@ async def health_assistant(request_obj):
         persist_state['previous_state'] = ""
         user_persist_state.save_session_persist_state(response)
     else:
-        # Костыль для перехода в начальное состояние
         if new_state.get_calories() == 9999:
             persist_state['calories'] = None
         elif new_state.get_calories() == 8888:
@@ -92,10 +122,11 @@ async def health_assistant(request_obj):
             persist_state['previous_state'] = prev_state
         user_persist_state.save_session_persist_state(response)
 
-    if response["response"]["end_session"]:
+    if (response["response"]["end_session"] and new_state.get_id() == "900") or (new_state.get_id() == "600"):
         p_state = user_persist_state.get_persist_state()
         if 'calories' in p_state:
             response["response"]["text"] += str(persist_state['calories']) + " калорий"
+            response["response"]["tts"] += str(persist_state['calories']) + " калорий"
 
     return web.json_response(response)
 
