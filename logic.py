@@ -2,13 +2,15 @@
 import random
 import sys
 import psycopg2
+
 sys.path.append('../')
 from db.db import new_connection, select_from_fitnes, select_from_recipes, select_from_fitnes_random
+
 connection = psycopg2.connect(user="postgres",
-                            password="artem2000",
-                            host="127.0.0.1",
-                            port="5432",
-                            database="health_assistant")
+                              password="artem2000",
+                              host="127.0.0.1",
+                              port="5432",
+                              database="health_assistant")
 cursor = new_connection(connection)
 
 register_states = {}
@@ -18,8 +20,8 @@ global leaf_state_id
 
 def get_recipe():
     recipe = select_from_recipes(connection, cursor, 'салат')
-    text = "Хотели — получите!\n Вкусный и полезный рецепт завтрака!\n" + recipe[3] + \
-           "\nХотете ещё рецепт или вернуться?"
+    text = "Хотели — получите!\n Вкусный и полезный рецепт завтрака!\n" + recipe[3]
+    text = [text, "Хотете ещё рецепт или вернуться?"]
     tts = "Хотели — ^получ`ите!^\n Вкусный и полезный рецепт завтрака!\n" + recipe[3] + \
           "\n Хотете ещё рецепт или вернуться?"
     return text, tts
@@ -27,13 +29,16 @@ def get_recipe():
 
 def get_random_train():
     random_train = select_from_fitnes_random(connection, cursor, 'Собственный вес')
-    text = "Часть тела, задействованная в упражнении: " + random_train[1].lower() + "\n"\
-           "Описание упражнения: " + random_train[4].lower() + "\n"\
-           "Мышцы, задействованные в упражнении: " + random_train[5].lower() + "\n" + random_train[3]
+    text = "Часть тела, задействованная в упражнении: " + random_train[1].lower() + "\n" \
+                                                                                    "Описание упражнения: " + \
+           random_train[4].lower() + "\n" \
+                                     "Мышцы, задействованные в упражнении: " + random_train[5].lower() + "\n" + \
+           random_train[3]
     text = [text, "Готовы начать, или хотите другое?"]
-    tts = "Часть ^тела^, задействованная в упражнении:\n " + random_train[1].lower() + "\n"\
-          "Описание ^упражнения^:\n " + random_train[4].lower() + "\n"\
-          "^Мышцы^, задействованные в упражнении:\n " + random_train[5].lower() + \
+    tts = "Часть ^тела^, задействованная в упражнении:\n " + random_train[1].lower() + "\n" \
+                                                                                       "Описание ^упражнения^:\n " + \
+          random_train[4].lower() + "\n" \
+                                    "^Мышцы^, задействованные в упражнении:\n " + random_train[5].lower() + \
           "\nГотовы начать или хотите другое?"
 
     return text, tts
@@ -43,11 +48,13 @@ def get_first_train():
     first_train = select_from_fitnes(connection, cursor, 'Собственный вес', "Спина")
     text = "Упражнение №1: упражнение на спину\n" \
            "Описание упражнения: " + first_train[4].lower() + "\n" \
-           "Мышцы, задействованные в упражнении: " + first_train[5].lower() + "\n" + first_train[3]
+                                                              "Мышцы, задействованные в упражнении: " + first_train[
+               5].lower() + "\n" + first_train[3]
     text = [text, "Готовы начать, или хотите другое?"]
     tts = "Упражнение номер ^один^: упражнение на ^спину^\n" \
           "Описание ^упражнения^:\n " + first_train[4].lower() + "\n" \
-          "^Мышцы^, задействованные в упражнении:\n " + first_train[5].lower() + \
+                                                                 "^Мышцы^, задействованные в упражнении:\n " + \
+          first_train[5].lower() + \
           "\nГотовы начать или перейти дальше к следующему упражнению?"
 
     return text, tts
@@ -57,11 +64,13 @@ def get_second_train():
     second_train = select_from_fitnes(connection, cursor, 'Собственный вес', "Грудь")
     text = "Упражнение №2: упражнение на грудь\n" \
            "Описание упражнения: " + second_train[4].lower() + "\n" \
-           "Мышцы, задействованные в упражнении: " + second_train[5].lower() + "\n" + second_train[3]
+                                                               "Мышцы, задействованные в упражнении: " + second_train[
+               5].lower() + "\n" + second_train[3]
     text = [text, "Готовы начать, или хотите другое?"]
     tts = "Упражнение номер ^два^: упражнение на ^грудь^\n " \
           "Описание ^упражнения^:\n " + second_train[4].lower() + "\n" \
-          "^Мышцы^, задействованные в упражнении:\n " + second_train[5].lower() + \
+                                                                  "^Мышцы^, задействованные в упражнении:\n " + \
+          second_train[5].lower() + \
           "\nГотовы начать или перейти дальше к следующему упражнению?"
 
     return text, tts
@@ -71,11 +80,13 @@ def get_third_train():
     third_train = select_from_fitnes(connection, cursor, 'Собственный вес', "Верхние части ног")
     text = "Упражнение №3: упражнение на ноги\n" \
            "Описание упражнения: " + third_train[4].lower() + "\n" \
-           "Мышцы, задействованные в упражнении: " + third_train[5].lower() + "\n" + third_train[3]
+                                                              "Мышцы, задействованные в упражнении: " + third_train[
+               5].lower() + "\n" + third_train[3]
     text = [text, "Готовы начать, или хотите другое?"]
     tts = "Упражнение номер ^три^: упражнение на ^ноги^\n " \
           "Описание ^упражнения^:\n " + third_train[4].lower() + "\n" \
-          "^Мышцы^, задействованные в упражнении:\n " + third_train[5].lower() + \
+                                                                 "^Мышцы^, задействованные в упражнении:\n " + \
+          third_train[5].lower() + \
           "\nГотовы начать или перейти дальше к следующему упражнению?"
 
     return text, tts
@@ -85,11 +96,13 @@ def get_forth_train():
     forth_train = select_from_fitnes(connection, cursor, 'Собственный вес', "Верхние части рук")
     text = "Упражнение №4: упражнение на руки\n" \
            "Описание упражнения: " + forth_train[4].lower() + "\n" \
-           "Мышцы, задействованные в упражнении: " + forth_train[5].lower() + "\n" + forth_train[3]
+                                                              "Мышцы, задействованные в упражнении: " + forth_train[
+               5].lower() + "\n" + forth_train[3]
     text = [text, "Готовы начать, или хотите другое?"]
     tts = "Упражнение номер ^четыре^: упражнение на ^руки^\n " \
           "Описание ^упражнения^:\n " + forth_train[4].lower() + "\n" \
-          "^Мышцы^, задействованные в упражнении:\n " + forth_train[5].lower() + \
+                                                                 "^Мышцы^, задействованные в упражнении:\n " + \
+          forth_train[5].lower() + \
           "\nГотовы начать или перейти дальше к следующему упражнению?"
 
     return text, tts
@@ -99,11 +112,13 @@ def get_fifth_train():
     fifth_train = select_from_fitnes(connection, cursor, 'Собственный вес', "Кардио")
     text = "Упражнение №5: упражнение на спину\n" \
            "Описание упражнения: " + fifth_train[4].lower() + "\n" \
-           "Мышцы, задействованные в упражнении: " + fifth_train[5].lower() + "\n" + fifth_train[3]
+                                                              "Мышцы, задействованные в упражнении: " + fifth_train[
+               5].lower() + "\n" + fifth_train[3]
     text = [text, "Готовы начать, или закончить программу?"]
     tts = "Упражнение номер ^пять^: ^кардио^\n " \
           "Описание ^упражнения^:\n " + fifth_train[4].lower() + "\n" \
-          "^Мышцы^, задействованные в упражнении:\n " + fifth_train[5].lower() + \
+                                                                 "^Мышцы^, задействованные в упражнении:\n " + \
+          fifth_train[5].lower() + \
           "\nГотовы начать или завершить программу?"
 
     return text, tts
@@ -205,7 +220,7 @@ def init():
     global leaf_state_id
     State("100",
           "Привет! Я помогу Вам поддержать себя в хорошей форме, "
-          "а также порекомендую вам вкусный и полезный завтрак." 
+          "а также порекомендую вам вкусный и полезный завтрак."
           "Со мной никакой фитнес-клуб не нужен! "
           "Вы можете выбрать тренировочную программу из нескольких упражнений,"
           " случайное упражнение или полезный рецепт, а также следить за своей статистикой. Хотите начать?",
@@ -231,7 +246,6 @@ def init():
               }
           ]).register()
 
-    # Нужно добавить переходы в ветки
     State("101",
           "Скажите «Программа» для запуска тренировочной программы\n\n"
           "«Упражнение» для выбора случайного упражнения\n\n«Завтрак» для выбора лёгкого и полезного блюда\n\n"
@@ -299,6 +313,11 @@ def init():
               }
           ]).register()
 
+    State("102",
+          "Чтобы воспользоваться функцией, пожалуйста, авторизуйтесь в приложении", [], None,
+          "Чтобы воспользоваться функцией, пожалуйста, авторизуйтесь в приложении", is_end=True
+          ).register()
+
     # Рецепт
     State("200",
           "Завтрак - это самый важный приём пищи и вершина кулинарного искусства! Хотите услышать рецепт завтрака, "
@@ -323,7 +342,7 @@ def init():
               }
           ]).register()
 
-    State("201",  "",
+    State("201", "",
           [
               Transition("101", ["вернуться"]),
               Transition("201", ["ещё", "еще"])
@@ -944,7 +963,7 @@ def init():
           [
               Transition("900", ["завершить"]),
               Transition("101", ["вернуться"])
-           ],
+          ],
           "800",
           "Статистика удалена\n\nСкажите ^«Вернуться»^ чтобы вернуться в меню или ^«Завершить»^ чтобы выйти",
           [
@@ -971,7 +990,7 @@ def init():
               Transition("701", ["плеер"]),
               Transition("702", ["гифка"]),
               Transition("703", ["удалить статистику"])
-           ], "800", "",
+          ], "800", "",
           [
               {
                   "title": "Нет",
@@ -1049,9 +1068,9 @@ def init():
                   }
               }
           ], card={
-              "type": "BigImage",
-              "image_url": "http://d205bpvrqc9yn1.cloudfront.net/0859.gif"
-          }
+            "type": "BigImage",
+            "image_url": "http://d205bpvrqc9yn1.cloudfront.net/0859.gif"
+        }
           ).register()
 
     # Зануление калорий с удалением из персистента
