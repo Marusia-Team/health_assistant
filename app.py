@@ -48,7 +48,6 @@ async def health_assistant(request_obj):
                 new_state = logic.get_leaf_state()
         else:
             current_state = logic.get_state(session_state["current_state_id"])
-            # Сохраняем предыдущее состояние
             new_state = current_state.get_next_state(request["request"]["command"])
             if current_state.get_id() == "800":
                 if persist_state['previous_state'] == "":
@@ -62,6 +61,14 @@ async def health_assistant(request_obj):
 
         if new_state.get_id() == "401":
             text, tts = logic.get_random_train()
+            response["response"]["text"] = text
+            response["response"]["tts"] = tts
+        elif new_state.get_id() == "421":
+            text, tts = logic.get_random_train()
+            response["response"]["text"] = text
+            response["response"]["tts"] = tts
+        elif new_state.get_id() == "423":
+            text, tts = logic.get_recipe()
             response["response"]["text"] = text
             response["response"]["tts"] = tts
         elif new_state.get_id() == "201":
@@ -96,14 +103,14 @@ async def health_assistant(request_obj):
         else:
             response["response"]["buttons"] = new_state.get_buttons()
         response["response"]["card"] = new_state.get_card()
-        # if new_state.get_id() == "701":
-        #     response["response"]["audio_player"] = new_state.get_audio_player()
+        if new_state.get_id() == "701":
+            response["response"]["audio_player"] = new_state.get_audio_player()
         response["response"]["commands"] = new_state.get_commands()
 
-        if new_state.get_id() == "200" and request["session"]["application"]["application_type"] == "speaker":
-            new_state = logic.get_state("202")
-            response["response"]["text"] = new_state.get_text()
-            response["response"]["tts"] = new_state.get_tts()
+        # if new_state.get_id() == "200" and request["session"]["application"]["application_type"] == "speaker":
+        #     new_state = logic.get_state("202")
+        #     response["response"]["text"] = new_state.get_text()
+        #     response["response"]["tts"] = new_state.get_tts()
 
         if not new_state.is_end_state():
             session_state["current_state_id"] = new_state.get_id()
